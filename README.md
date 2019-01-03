@@ -13,6 +13,7 @@ package main
 
 import (
 	"github.com/dhaninugraha/gadogado"
+	// "encoding/json"
 	"net/http"
 	"time"
 	"fmt"
@@ -31,7 +32,10 @@ func main() {
 		log.Fatalf("Error fetching %q: %s\n", url, err.Error())
 	}
 
-	g, err := gadogado.Make(resp.Body)
+	g, err := gadogado.Make(resp.Body, nil)
+	/* alternately, if you wanna exclude certain tags; eg. <meta> and <style> */
+	// g, err := gadogado.Make(resp.Body, gadogado.ExcludeTags("meta", "style"))
+
 	if err != nil {
 		log.Fatalf("Error making gado-gado: %s\n", err.Error())
 	}
