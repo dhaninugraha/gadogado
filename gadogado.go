@@ -37,7 +37,7 @@ func iterateNodes(n *html.Node, parent *Node, excludedTags *dummyMap) {
 
 	for child := n.FirstChild; child != nil; child = child.NextSibling {
 		if child.Type == html.ElementNode {
-			if !excludedTags.Exists(child.Data) {
+			if !excludedTags.exists(child.Data) {
 				childNode := newNode()
 				parent.Children = append(parent.Children, childNode)
 				iterateNodes(child, &parent.Children[len(parent.Children) - 1], excludedTags)

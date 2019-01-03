@@ -15,7 +15,7 @@ func (m *dummyMap) addKey(k string) {
 	}
 }
 
-func (m *dummyMap) Exists(k string) bool {
+func (m *dummyMap) exists(k string) bool {
 	if m == nil || k == "" {
 		return false
 	}
