@@ -17,7 +17,7 @@ var typeMap = map[html.NodeType]string{
 
 type Node struct {
 	Tag			string				`json:"tag,omitempty"`
-	NodeType	string				`json:"node_type"`
+	NodeType	string				`json:"node_type,omitempty"`
 	Attrs		map[string]string	`json:"attrs,omitempty"`
 	Text		string				`json:"text,omitempty"`
 	Children	[]Node				`json:"children,omitempty"`
@@ -65,6 +65,49 @@ func ExcludeTags(tags ...string) *dummyMap {
 	}
 
 	return excluded
+}
+
+func (n *Node) CherryPick(tags ...string) map[string][]Node {
+	picked := make(map[string][]Node)
+
+	var picker func (*Node, string)
+	picker = func(node *Node, tag string) {
+		if (*node).NodeType == typeMap[html.ElementNode] {
+			if (*node).Tag == tag {
+				thisNode := Node{Attrs: make(map[string]string), Text: ""}
+
+				if (*node).Attrs != nil {
+					thisNode.Attrs = (*node).Attrs
+				}
+
+				if (*node).Text != "" {
+					thisNode.Text = (*node).Text
+				}
+
+
+				_, ok := picked[tag]
+				if !ok {
+					picked[tag] = []Node{thisNode, }
+				} else {
+					picked[tag] = append(picked[tag], thisNode)
+				}
+			}
+		}
+
+		if len((*node).Children) > 0 {
+			for _, child := range (*node).Children {
+				picker(&child, tag)
+			}
+		}
+	}
+
+	if len(tags) > 0 {
+		for _, tag := range tags {
+			picker(n, tag)
+		}
+	}
+
+	return picked
 }
 
 func Make(r io.Reader, excludedTags *dummyMap) (*Node, error) {
