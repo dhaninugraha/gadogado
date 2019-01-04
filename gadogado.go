@@ -6,8 +6,18 @@ import (
 	"io"
 )
 
+var typeMap = map[html.NodeType]string{
+    html.ErrorNode: "ErrorNode",
+    html.TextNode: "TextNode",
+    html.DocumentNode: "DocumentNode",
+    html.ElementNode: "ElementNode",
+    html.CommentNode: "CommentNode",
+    html.DoctypeNode: "DoctypeNode",
+}
+
 type Node struct {
-	TagName		string				`json:"tag_name"`
+	Tag			string				`json:"tag,omitempty"`
+	NodeType	string				`json:"node_type"`
 	Attrs		map[string]string	`json:"attrs,omitempty"`
 	Text		string				`json:"text,omitempty"`
 	Children	[]Node				`json:"children,omitempty"`
@@ -18,8 +28,9 @@ func newNode() Node {
 }
 
 func iterateNodes(n *html.Node, parent *Node, excludedTags *dummyMap) {
-	if n.Type == html.ElementNode {
-		parent.TagName = n.Data
+	if n.Type == html.ElementNode || n.Type == html.DocumentNode {
+		parent.Tag = n.Data
+		parent.NodeType = typeMap[n.Type]
 
 		attrs := make(map[string]string)
 		for _, a := range n.Attr {
@@ -63,11 +74,9 @@ func Make(r io.Reader, excludedTags *dummyMap) (*Node, error) {
 		iterateNodes(doc, &node, excludedTags)
 
 		if len(node.Children) > 0 {
-			return &node.Children[0], nil
-		} else {
-			return &node, err	
+			return &node, nil
 		}
-	} else {
-		return &node, err
 	}
+
+	return &node, err
 }
