@@ -4,7 +4,7 @@ Basically a wrapper for the `golang.org/x/net/html` package.
 
 ## Why?
 
-Because writing recursive functions to iterate through `html.Node`s sucks.
+Because writing recursive functions to iterate through `html.Node`s sucks. Also, I believe I haven't found a good alternative to Python's `BeautifulSoup` in Go.
 
 ## Usage Example
 
@@ -13,7 +13,7 @@ package main
 
 import (
 	"github.com/dhaninugraha/gadogado"
-	// "encoding/json"
+	"encoding/json"
 	"net/http"
 	"time"
 	"fmt"
@@ -31,8 +31,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error fetching %q: %s\n", url, err.Error())
 	}
+	defer resp.Body.Close()
 
-	g, err := gadogado.Make(resp.Body, nil)
+	gado2, err := gadogado.Make(resp.Body, nil)
 	/* alternately, if you wanna exclude certain tags; eg. <meta> and <style> */
 	// g, err := gadogado.Make(resp.Body, gadogado.ExcludeTags("meta", "style"))
 
@@ -40,15 +41,21 @@ func main() {
 		log.Fatalf("Error making gado-gado: %s\n", err.Error())
 	}
 
-	/* ugly-print the result */
-	fmt.Printf("%#v", g)
+	asJson, err := json.MarshalIndent(gado2, "", " ")
+	if err != nil {
+		log.Fatalf("Error marshaling to JSON: %s\n", err.Error())
+	}
 
-	/* or, you know, you could always pretty-print it */
-	// j, err := json.MarshalIndent(g, "", "  ")
-	// if err != nil {
-	// 	log.Fatalf("Error marshaling to JSON: %s\n", err.Error())
-	// }
+	fmt.Println(string(asJson))
 
-	// fmt.Println(string(j))
+
+	// cherry-pick a certain element
+	styleTag := gado2.CherryPick("style")
+	asJson, err = json.MarshalIndent(styleTag, "", " ")
+	if err != nil {
+		log.Fatalf("Error marshaling to JSON: %s\n", err.Error())
+	}
+
+	fmt.Println(string(asJson))	
 }
 ```

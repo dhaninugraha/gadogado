@@ -74,7 +74,7 @@ func (n *Node) CherryPick(tags ...string) map[string][]Node {
 	picker = func(node *Node, tag string) {
 		if (*node).NodeType == typeMap[html.ElementNode] {
 			if (*node).Tag == tag {
-				thisNode := Node{Attrs: make(map[string]string), Text: ""}
+				thisNode := Node{Attrs: make(map[string]string)}
 
 				if (*node).Attrs != nil {
 					thisNode.Attrs = (*node).Attrs
