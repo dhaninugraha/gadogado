@@ -23,6 +23,11 @@ type Node struct {
 	Children	[]Node				`json:"children,omitempty"`
 }
 
+type cherryPickerDetail struct {
+	Tags		[]string
+	GetChildren	bool
+}
+
 func newNode() Node {
 	return Node{Children: []Node{}, Attrs: map[string]string{}}
 }
@@ -67,7 +72,33 @@ func ExcludeTags(tags ...string) *dummyMap {
 	return excluded
 }
 
-func (n *Node) CherryPick(tags ...string) map[string][]Node {
+func Tags(tags ...string) func (*cherryPickerDetail) {
+	return func(c *cherryPickerDetail) {
+		if len(tags) > 0 {
+			for _, tag := range tags {
+				c.Tags = append(c.Tags, tag)
+			}
+		}
+	}
+}
+
+func GetChildren() func (*cherryPickerDetail) {
+	return func(c *cherryPickerDetail) {
+		c.GetChildren = true
+	}
+}
+
+func (n *Node) CherryPick(options ...func(*cherryPickerDetail)) map[string][]Node {
+	c := &cherryPickerDetail{}
+
+	for _, option := range options {
+		option(c)
+	}
+
+	return n.cherryPicker(c.GetChildren, c.Tags)
+}
+
+func (n *Node) cherryPicker(getChildren bool, tags []string) map[string][]Node {
 	picked := make(map[string][]Node)
 
 	var picker func (*Node, string)
@@ -86,6 +117,11 @@ func (n *Node) CherryPick(tags ...string) map[string][]Node {
 
 
 				_, ok := picked[tag]
+
+				if getChildren {
+					thisNode.Children = (*node).Children
+				}
+
 				if !ok {
 					picked[tag] = []Node{thisNode, }
 				} else {

@@ -49,9 +49,9 @@ func main() {
 	fmt.Println(string(asJson))
 
 
-	// cherry-pick a certain element
-	styleTag := gado2.CherryPick("style")
-	asJson, err = json.MarshalIndent(styleTag, "", " ")
+	// cherry-pick certain element(s)
+	headAndBody := gado2.CherryPick(gadogado.Tags("head", "body"), gadogado.GetChildren())
+	asJson, err = json.MarshalIndent(headAndBody, "", " ")
 	if err != nil {
 		log.Fatalf("Error marshaling to JSON: %s\n", err.Error())
 	}
