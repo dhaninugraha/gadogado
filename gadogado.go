@@ -2,6 +2,7 @@ package gadogado
 
 import (
 	"github.com/dhaninugraha/gadogado/internal/utils"
+	"github.com/dhaninugraha/gadogado/cherrypicker"
 	"golang.org/x/net/html"
 	"io"
 )
@@ -21,11 +22,6 @@ type Node struct {
 	Attrs		map[string]string	`json:"attrs,omitempty"`
 	Text		string				`json:"text,omitempty"`
 	Children	[]Node				`json:"children,omitempty"`
-}
-
-type cherryPickerDetail struct {
-	Tags		[]string
-	GetChildren	bool
 }
 
 func newNode() Node {
@@ -72,24 +68,8 @@ func ExcludeTags(tags ...string) *dummyMap {
 	return excluded
 }
 
-func Tags(tags ...string) func (*cherryPickerDetail) {
-	return func(c *cherryPickerDetail) {
-		if len(tags) > 0 {
-			for _, tag := range tags {
-				c.Tags = append(c.Tags, tag)
-			}
-		}
-	}
-}
-
-func GetChildren() func (*cherryPickerDetail) {
-	return func(c *cherryPickerDetail) {
-		c.GetChildren = true
-	}
-}
-
-func (n *Node) CherryPick(options ...func(*cherryPickerDetail)) map[string][]Node {
-	c := &cherryPickerDetail{}
+func (n *Node) CherryPick(options ...func(*cherrypicker.CherryPickerDetail)) map[string][]Node {
+	c := &cherrypicker.CherryPickerDetail{}
 
 	for _, option := range options {
 		option(c)
