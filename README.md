@@ -12,6 +12,7 @@ Because writing recursive functions to iterate through `html.Node`s sucks. Also,
 package main
 
 import (
+	"github.com/dhaninugraha/gadogado/cherrypicker"
 	"github.com/dhaninugraha/gadogado"
 	"encoding/json"
 	"net/http"
@@ -50,7 +51,7 @@ func main() {
 
 
 	// cherry-pick certain element(s)
-	headAndBody := gado2.CherryPick(gadogado.Tags("head", "body"), gadogado.GetChildren())
+	headAndBody := gado2.CherryPick(cherrypicker.Tags("head", "body"), cherrypicker.GetChildren())
 	asJson, err = json.MarshalIndent(headAndBody, "", " ")
 	if err != nil {
 		log.Fatalf("Error marshaling to JSON: %s\n", err.Error())
