@@ -1,27 +1,27 @@
 package gadogado
 
 import (
-	"github.com/dhaninugraha/gadogado/internal/utils"
 	"github.com/dhaninugraha/gadogado/cherrypicker"
+	"github.com/dhaninugraha/gadogado/internal/utils"
 	"golang.org/x/net/html"
 	"io"
 )
 
 var typeMap = map[html.NodeType]string{
-    html.ErrorNode: "ErrorNode",
-    html.TextNode: "TextNode",
-    html.DocumentNode: "DocumentNode",
-    html.ElementNode: "ElementNode",
-    html.CommentNode: "CommentNode",
-    html.DoctypeNode: "DoctypeNode",
+	html.ErrorNode:    "ErrorNode",
+	html.TextNode:     "TextNode",
+	html.DocumentNode: "DocumentNode",
+	html.ElementNode:  "ElementNode",
+	html.CommentNode:  "CommentNode",
+	html.DoctypeNode:  "DoctypeNode",
 }
 
 type Node struct {
-	Tag			string				`json:"tag,omitempty"`
-	NodeType	string				`json:"node_type,omitempty"`
-	Attrs		map[string]string	`json:"attrs,omitempty"`
-	Text		string				`json:"text,omitempty"`
-	Children	[]Node				`json:"children,omitempty"`
+	Tag      string            `json:"tag,omitempty"`
+	NodeType string            `json:"node_type,omitempty"`
+	Attrs    map[string]string `json:"attrs,omitempty"`
+	Text     string            `json:"text,omitempty"`
+	Children []Node            `json:"children,omitempty"`
 }
 
 func newNode() Node {
@@ -52,7 +52,7 @@ func iterateNodes(n *html.Node, parent *Node, excludedTags *dummyMap) {
 			if !excludedTags.exists(child.Data) {
 				childNode := newNode()
 				parent.Children = append(parent.Children, childNode)
-				iterateNodes(child, &parent.Children[len(parent.Children) - 1], excludedTags)
+				iterateNodes(child, &parent.Children[len(parent.Children)-1], excludedTags)
 			}
 		}
 	}
@@ -81,7 +81,7 @@ func (n *Node) CherryPick(options ...func(*cherrypicker.CherryPickerDetail)) map
 func (n *Node) cherryPicker(getChildren bool, tags []string) map[string][]Node {
 	picked := make(map[string][]Node)
 
-	var picker func (*Node, string)
+	var picker func(*Node, string)
 	picker = func(node *Node, tag string) {
 		if (*node).NodeType == typeMap[html.ElementNode] {
 			if (*node).Tag == tag {
@@ -95,7 +95,6 @@ func (n *Node) cherryPicker(getChildren bool, tags []string) map[string][]Node {
 					thisNode.Text = (*node).Text
 				}
 
-
 				_, ok := picked[tag]
 
 				if getChildren {
@@ -103,7 +102,7 @@ func (n *Node) cherryPicker(getChildren bool, tags []string) map[string][]Node {
 				}
 
 				if !ok {
-					picked[tag] = []Node{thisNode, }
+					picked[tag] = []Node{thisNode}
 				} else {
 					picked[tag] = append(picked[tag], thisNode)
 				}

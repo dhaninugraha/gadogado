@@ -1,11 +1,11 @@
 package cherrypicker
 
 type CherryPickerDetail struct {
-	Tags		[]string
-	GetChildren	bool
+	Tags        []string
+	GetChildren bool
 }
 
-func Tags(tags ...string) func (*CherryPickerDetail) {
+func Tags(tags ...string) func(*CherryPickerDetail) {
 	return func(c *CherryPickerDetail) {
 		if len(tags) > 0 {
 			for _, tag := range tags {
@@ -15,7 +15,7 @@ func Tags(tags ...string) func (*CherryPickerDetail) {
 	}
 }
 
-func GetChildren() func (*CherryPickerDetail) {
+func GetChildren() func(*CherryPickerDetail) {
 	return func(c *CherryPickerDetail) {
 		c.GetChildren = true
 	}
